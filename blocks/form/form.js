@@ -334,6 +334,11 @@ async function createFormForAuthoring(formDef) {
 }
 
 export async function createForm(formDef, data, source = 'aem') {
+   const form = document.createElement('form');
+  form.method = "post"; // force POST
+  form.action = "https://script.google.com/macros/s/AKfycbwakZMKBcAOfhNpFqvIoxYybz3H_s5vBctcj4lXHHmu2X_piRM1saaQPwl75De9xfHN/exec"; // <-- your Web App URL
+  form.dataset.source = source;
+  form.noValidate = true;
   const { action: formPath } = formDef;
   const form = document.createElement('form');
   form.dataset.action = formPath;
