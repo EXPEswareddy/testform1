@@ -518,7 +518,6 @@ function loadFormCustomStyles(formDef) {
 }
 
 async function setupForm(formDef, { pathname, block, editMode = false } = {}) {
-   formDef.action = 
   const submitProps = formDef?.properties?.['fd:submit'];
   const actionType = submitProps?.actionName || formDef?.properties?.actionType;
   const spreadsheetUrl = submitProps?.spreadsheet?.spreadsheetUrl
