@@ -336,55 +336,16 @@ async function createFormForAuthoring(formDef) {
 export async function createForm(formDef, data, source = 'aem') {
   const form = document.createElement('form');
   form.method = "post"; // ✅ Ensure POST
-  form.action = formDef.action; // ✅ Uses the Web App URL from setupForm
+  form.action = formDef.action; // ✅ Uses Web App URL from setupForm
   form.dataset.source = source;
   form.noValidate = true;
-  
-  const { action: formPath } = formDef;
-  /*const form = document.createElement('form');
-  form.dataset.action = formPath;
-  form.dataset.source = source;
-  form.noValidate = true;*/
+
   if (formDef.appliedCssClassNames) {
     form.className = formDef.appliedCssClassNames;
   }
-  const formId = extractIdFromUrl(formPath); // formDef.id returns $form after getState()
+
+  const formId = extractIdFromUrl(formDef.action);
   await generateFormRendition(formDef, form, formId);
-
-  let captcha;
-  if (captchaField) {
-    let config = captchaField?.properties?.['fd:captcha']?.config;
-    if (!config) {
-      config = {
-        siteKey: captchaField?.value,
-        uri: captchaField?.uri,
-        version: captchaField?.version,
-      };
-    }
-    const pageName = getSitePageName(captchaField?.properties?.['fd:path']);
-    captcha = new GoogleReCaptcha(config, captchaField.id, captchaField.name, pageName);
-    captcha.loadCaptcha(form);
-  }
-
-  // Only enable DOM validation for doc-based forms; edge forms use the model.
-  if (source === 'sheet') {
-    enableValidation(form);
-  }
-  transferRepeatableDOM(form, formDef, form, formId);
-
-  if (afModule && typeof Worker === 'undefined') {
-    window.setTimeout(async () => {
-      afModule.loadRuleEngine(formDef, form, captcha, generateFormRendition, data);
-    }, DELAY_MS);
-  }
-
-  form.addEventListener('reset', async () => {
-    const currentSource = form.dataset.source || 'aem';
-    const response = await createForm(formDef, undefined, currentSource);
-    if (response?.form) {
-      document.querySelector(`[data-action="${form?.dataset?.action}"]`)?.replaceWith(response?.form);
-    }
-  });
 
   form.addEventListener('submit', (e) => {
     handleSubmit(e, form, captcha);
@@ -397,6 +358,7 @@ export async function createForm(formDef, data, source = 'aem') {
     data,
   };
 }
+
 
 function cleanUp(content) {
   const formDef = content.replaceAll('^(([^<>()\\\\[\\\\]\\\\\\\\.,;:\\\\s@\\"]+(\\\\.[^<>()\\\\[\\\\]\\\\\\\\.,;:\\\\s@\\"]+)*)|(\\".+\\"))@((\\\\[[0-9]{1,3}\\\\.[0-9]{1,3}\\\\.[0-9]{1,3}\\\\.[0-9]{1,3}])|(([a-zA-Z\\\\-0-9]+\\\\.)\\+[a-zA-Z]{2,}))$', '');
