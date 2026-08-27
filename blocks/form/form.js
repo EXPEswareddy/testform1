@@ -340,10 +340,10 @@ export async function createForm(formDef, data, source = 'aem') {
   form.dataset.source = source;
   form.noValidate = true;
   const { action: formPath } = formDef;
-  const form = document.createElement('form');
+  /*const form = document.createElement('form');
   form.dataset.action = formPath;
   form.dataset.source = source;
-  form.noValidate = true;
+  form.noValidate = true;*/
   if (formDef.appliedCssClassNames) {
     form.className = formDef.appliedCssClassNames;
   }
